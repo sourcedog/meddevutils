@@ -13,9 +13,10 @@ class Tx_Meddevutils_ViewHelpers_TypoLinkViewHelper extends Tx_Fluid_Core_ViewHe
      *
      * @param string $value The text / image
      * @param string $parameter The link target
+     * @param string $additionalParams additionalParams
      * @return parsed value through TypoScript
      */
-    public function render($value, $parameter) {
+    public function render($value, $parameter, $additionalParams = '') {
 
         if(file_exists($value)) {
 
@@ -23,7 +24,8 @@ class Tx_Meddevutils_ViewHelpers_TypoLinkViewHelper extends Tx_Fluid_Core_ViewHe
                 'file' => $value,
                 'stdWrap.' => array(
                     'typolink.' => array(
-                        'parameter' => $parameter
+                        'parameter' => $parameter,
+                        'additionalParams' => $additionalParams
                     )
                 )
             );
@@ -34,9 +36,13 @@ class Tx_Meddevutils_ViewHelpers_TypoLinkViewHelper extends Tx_Fluid_Core_ViewHe
 
         } else {
 
+            if(empty($value))
+                $value = $this->renderChildren();
+
             $typolinkConf = array(
                 'value' => $value,
-                'parameter' => $parameter
+                'parameter' => $parameter,
+                'additionalParams' => $additionalParams
             );
 
             return $GLOBALS['TSFE']

@@ -37,6 +37,7 @@ class Tx_Meddevutils_Domain_Repository_AbstractRepository extends Tx_Extbase_Per
     protected $respectEnableFields = true;
     protected $respectStoragePage = true;
     protected $limit = null;
+    protected $offset = null;
 
     public function findByFilter($findArray)
     {
@@ -48,6 +49,10 @@ class Tx_Meddevutils_Domain_Repository_AbstractRepository extends Tx_Extbase_Per
 
         if(!is_null($this->limit)) {
             $query->setLimit($this->limit);
+        }
+
+        if(!is_null($this->offset)) {
+            $query->setOffset($this->offset);
         }
 
         $query->getQuerySettings()
@@ -83,6 +88,14 @@ class Tx_Meddevutils_Domain_Repository_AbstractRepository extends Tx_Extbase_Per
     {
         if((int)$limit > 0)
             $this->limit = (int)$limit;
+
+        return $this;
+    }
+
+    public function setOffset($offset)
+    {
+        if((int)$offset > 0)
+            $this->offset = (int)$offset;
 
         return $this;
     }

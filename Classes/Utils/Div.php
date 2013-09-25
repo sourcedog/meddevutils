@@ -77,4 +77,148 @@ class Tx_Meddevutils_Utils_Div
 
     }
 
+    public static function getCurrentLanguage()
+    {
+        return strtoupper($GLOBALS['TSFE']->config['config']['language']);
+    }
+
+
+    public static function getUserLanguage($default = 'en')
+    {
+        $lang = reset(explode("_",$_SERVER["HTTP_ACCEPT_LANGUAGE"]));
+        if(empty($lang))
+            return $default;
+        else
+            return $lang;
+    }
+
+    public static function getUserCountry($default = 'DE')
+    {
+        $client  = @$_SERVER['HTTP_CLIENT_IP'];
+        $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
+        $remote  = $_SERVER['REMOTE_ADDR'];
+        if(filter_var($client, FILTER_VALIDATE_IP))
+        {
+            $ip = $client;
+        }
+        elseif(filter_var($forward, FILTER_VALIDATE_IP))
+        {
+            $ip = $forward;
+        }
+        else
+        {
+            $ip = $remote;
+        }
+
+        // Debug Setting für Entwicklungsserver
+        if(reset(explode('.', $ip)) == '10')
+            $ip = '217.91.168.134';
+
+        $ip_data = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=".$ip));
+
+        if($ip_data && $ip_data->geoplugin_countryCode != null && $ip_data->geoplugin_countryCode != '')
+        {
+            return $ip_data->geoplugin_countryCode;
+        } else {
+            return $default;
+        }
+    }
+
+    public static function setSession($name, $value)
+    {
+        $GLOBALS["TSFE"]->fe_user->setKey("ses", $name, $value);
+    }
+
+    public static function getSession($name)
+    {
+        return $GLOBALS["TSFE"]->fe_user->getKey("ses", $name);
+    }
+
+    public static function clearLogFile()
+    {
+        $logFile = PATH_site . '/devutils.log';
+
+        file_put_contents($logFile, '');
+    }
+
+    public static function logToFile($data)
+    {
+        $logFile = PATH_site . '/devutils.log';
+
+        if(is_object($data) || is_array($data)) {
+            ob_start();
+            print_r($data);
+            $data = ob_get_clean();
+        }
+
+        file_put_contents($logFile, $data."\n", FILE_APPEND);
+    }
+
+    public static function deleteLogFile()
+    {
+        $logFile = PATH_site . '/devutils.log';
+
+
+        unlink($logFile);
+    }
+
+    /**
+     * Indents a flat JSON string to make it more human-readable.
+     *
+     * @param string $json The original JSON string to process.
+     *
+     * @return string Indented version of the original JSON string.
+     */
+     public static function indentJson($json) {
+
+        $result      = '';
+        $pos         = 0;
+        $strLen      = strlen($json);
+        $indentStr   = '  ';
+        $newLine     = "\n";
+        $prevChar    = '';
+        $outOfQuotes = true;
+
+        for ($i=0; $i<=$strLen; $i++) {
+
+            // Grab the next character in the string.
+            $char = substr($json, $i, 1);
+
+            // Are we inside a quoted string?
+            if ($char == '"' && $prevChar != '\\') {
+                $outOfQuotes = !$outOfQuotes;
+
+                // If this character is the end of an element,
+                // output a new line and indent the next line.
+            } else if(($char == '}' || $char == ']') && $outOfQuotes) {
+                $result .= $newLine;
+                $pos --;
+                for ($j=0; $j<$pos; $j++) {
+                    $result .= $indentStr;
+                }
+            }
+
+            // Add the character to the result string.
+            $result .= $char;
+
+            // If the last character was the beginning of an element,
+            // output a new line and indent the next line.
+            if (($char == ',' || $char == '{' || $char == '[') && $outOfQuotes) {
+                $result .= $newLine;
+                if ($char == '{' || $char == '[') {
+                    $pos ++;
+                }
+
+                for ($j = 0; $j < $pos; $j++) {
+                    $result .= $indentStr;
+                }
+            }
+
+            $prevChar = $char;
+        }
+
+        return $result;
+    }
+
+
 }

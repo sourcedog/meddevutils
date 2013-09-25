@@ -1,0 +1,15 @@
+lib.checkCountry = USER
+lib.checkCountry {
+    userFunc = user_checkCountry->main
+    language {
+        de = 0
+        en = 1
+        fr = 2
+        nl = 3
+        it = 4
+        pt = 5
+        es = 6
+        jp = 8
+        default = 1
+    }
+}
