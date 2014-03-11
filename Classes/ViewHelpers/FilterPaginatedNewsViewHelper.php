@@ -14,7 +14,7 @@ class Tx_Meddevutils_ViewHelpers_FilterPaginatedNewsViewHelper extends Tx_Fluid_
         $query = $objects->getQuery();
 
         // Get all items
-        $query->getQuerySettings()->setRespectEnableFields(FALSE);
+        //$query->getQuerySettings()->setRespectEnableFields(FALSE);
 
         // Limit items to language
         $constraints[] = $query->like('sys_language_uid',$language);
