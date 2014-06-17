@@ -41,8 +41,12 @@ class Tx_Meddevutils_ViewHelpers_TypoLinkViewHelper extends Tx_Fluid_Core_ViewHe
 
             $typolinkConf = array(
                 'value' => $value,
-                'parameter' => $parameter,
-                'additionalParams' => $additionalParams
+                'stdWrap.' => array(
+                    'typolink.' => array(
+                        'parameter' => $parameter,
+                        'additionalParams' => $additionalParams
+                    ),
+                ),
             );
 
             return $GLOBALS['TSFE']
